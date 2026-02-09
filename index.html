@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Choco Inventory | Premium Store</title>
+    <title>Choco Inventory | Premium Health Store</title>
     
-    <!-- Professional Typography and Icons -->
+    <!-- Modern Fonts & Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     
-    <!-- Image Zoom (GLightbox) CSS -->
+    <!-- GLightbox (Image Zoom) CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
 </head>
 <body>
@@ -17,52 +17,63 @@
     <header>
         <div class="header-content">
             <h1>Choco Inventory</h1>
-            <p><i class="fa-solid fa-circle-check" style="color: #25D366;"></i> Verified Business | Fast Delivery</p>
+            <p><i class="fa-solid fa-circle-check" style="color: #25D366;"></i> Verified Business | Premium Quality</p>
         </div>
     </header>
 
     <div class="how-to-order">
         <h2><i class="fa-solid fa-cart-shopping"></i> How to Order</h2>
-        <p>Browse our catalog. Click the WhatsApp button to chat with us directly for orders and payments.</p>
+        <p>1. Browse items 2. Click <strong>More Info</strong> for details 3. Click <strong>WhatsApp</strong> to order.</p>
     </div>
 
-    <!-- The Products will load here automatically from CSV -->
+    <!-- Product Grid -->
     <main id="product-container" class="product-grid">
-        <p style="text-align: center; grid-column: 1/-1;">Loading catalog...</p>
+        <div style="text-align: center; grid-column: 1/-1; padding: 50px;">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p>Loading Catalog...</p>
+        </div>
     </main>
+
+    <!-- More Info Modal Pop-up -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="modalBody">
+                <!-- Content from details folder loads here -->
+            </div>
+        </div>
+    </div>
 
     <footer>
         <p><strong>Secure Payments via Paytm</strong></p>
-        <p>Orders processed via WhatsApp Business: +971 50 224 7162</p>
+        <p>Contact us: +971 50 224 7162</p>
         <p>&copy; 2024 Choco Inventory</p>
     </footer>
 
-    <!-- Image Zoom JS -->
+    <!-- JS Libraries -->
     <script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
-    
-    <!-- CSV Parser & Logic -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <script>
         const WHATSAPP_NUMBER = "971502247162";
         const CSV_URL = "Products.csv";
 
-        // 1. Fetch and Parse the CSV
+        // 1. Fetch products from CSV
         Papa.parse(CSV_URL, {
             download: true,
             header: true,
+            skipEmptyLines: true,
             complete: function(results) {
                 displayProducts(results.data);
             }
         });
 
-        // 2. Generate the Product Cards
+        // 2. Build the UI
         function displayProducts(products) {
             const container = document.getElementById('product-container');
-            container.innerHTML = ""; // Clear loader
+            container.innerHTML = ""; 
 
             products.forEach(product => {
-                // Skip empty rows
                 if (!product.Name || !product.Code) return;
 
                 const card = document.createElement('div');
@@ -70,16 +81,22 @@
                 
                 card.innerHTML = `
                     <div class="product-image-container">
-                        <a href="images/${product.Image}" class="glightbox" data-description="${product.Details}">
+                        <a href="images/${product.Image}" class="glightbox" data-glightbox="title: ${product.Name}; description: ${product.Details}">
                             <img src="images/${product.Image}" alt="${product.Name}" loading="lazy">
                         </a>
                     </div>
                     <div class="product-info">
                         <h3>${product.Name}</h3>
-                        <p>${product.Details}</p>
+                        <p>${product.Details.substring(0, 90)}...</p>
+                        
                         <div class="product-meta">
                             <span class="code-tag">ID: ${product.Code}</span>
                         </div>
+
+                        <button onclick="openMoreInfo('${product.Code}')" class="btn-info">
+                            <i class="fa-solid fa-circle-info"></i> More Info
+                        </button>
+
                         <a href="https://wa.me/${WHATSAPP_NUMBER}?text=Hi!%20I%20want%20to%20order:%20${encodeURIComponent(product.Name)}%20(Code:%20${product.Code})" 
                            class="btn-whatsapp">
                            <i class="fa-brands fa-whatsapp"></i> Order on WhatsApp
@@ -89,12 +106,50 @@
                 container.appendChild(card);
             });
 
-            // 3. Initialize the Image Zoom (Lightbox)
-            const lightbox = GLightbox({
+            // Refresh Image Zoom for new cards
+            GLightbox({
                 touchNavigation: true,
                 loop: true,
                 zoomable: true
             });
+        }
+
+        // 3. Modal Functions
+        function openMoreInfo(productCode) {
+            const modal = document.getElementById("infoModal");
+            const body = document.getElementById("modalBody");
+            modal.style.display = "block";
+            body.innerHTML = '<div style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin"></i> Fetching details...</div>';
+
+            // Fetch external HTML file from 'details' folder
+            fetch(`details/${productCode}.html`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Not found');
+                    return response.text();
+                })
+                .then(data => {
+                    body.innerHTML = data;
+                })
+                .catch(err => {
+                    body.innerHTML = `
+                        <div style="text-align:center; padding:20px;">
+                            <h3>Product Details</h3>
+                            <p>Detailed specifications for item <strong>${productCode}</strong> are currently being updated. Please contact us on WhatsApp for immediate assistance.</p>
+                        </div>
+                    `;
+                });
+        }
+
+        function closeModal() {
+            document.getElementById("infoModal").style.display = "none";
+        }
+
+        // Close modal if user clicks outside content
+        window.onclick = function(event) {
+            const modal = document.getElementById("infoModal");
+            if (event.target == modal) {
+                closeModal();
+            }
         }
     </script>
 </body>
