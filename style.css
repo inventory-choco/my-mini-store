@@ -1,205 +1,363 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Choco Inventory | Premium Health Store</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
-</head>
-<body>
+/* --- 1. VARIABLES & RESET --- */
+:root {
+    --emerald-dark: #064e3b;
+    --emerald-mid: #065f46;
+    --emerald-light: #10b981;
+    --gold: #d4af37;
+    --bg-light: #f4f7f6;
+    --white: #ffffff;
+    --text-main: #1a1a1a;
+    --text-muted: #606770;
+    --whatsapp-green: #25D366;
+    --whatsapp-dark: #128C7E;
+    --transition-speed: 1500ms; /* Your requested fade speed */
+}
 
-    <!-- 1. NEW STICKY HEADER -->
-<header class="main-header">
-    <div class="header-container">
-        <div class="logo-area">
-            <a href="/"><img src="images/logo-DYd0Cdpu.svg" alt="IndusViva Logo" class="nav-logo"></a>
-        </div>
-        
-        <!-- Desktop Navigation -->
-        <nav class="nav-links">
-            <a href="/" class="active">HOME</a>
-            <a href="#">ABOUT</a>
-            <a href="#">PRODUCTS</a>
-            <a href="#">COMPLIANCE</a>
-            <a href="https://in.indusviva.com/signin" target="_blank">VIRTUAL OFFICE</a>
-            <a href="#">CUSTOMER CARE</a>
-        </nav>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        <!-- Mobile Menu Button -->
-        <button class="mobile-menu-btn" onclick="toggleMenu()">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-    </div>
-</header>
+body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
 
-<!-- 2. HERO BANNER SLIDER -->
-<section class="hero-slider">
-    <ul class="banner-slides" id="hero-slider">
-        <!-- Slide 1 -->
-        <li class="hero-slide active">
-            <img src="images/banner1.jpg" alt="Banner 1" class="desktop-img">
-            <img src="images/banner1-mob.jpg" alt="Banner 1 Mobile" class="mobile-img">
-        </li>
-        <!-- Slide 2 -->
-        <li class="hero-slide">
-            <img src="images/banner2.jpg" alt="Banner 2" class="desktop-img">
-            <img src="images/banner2-mob.jpg" alt="Banner 2 Mobile" class="mobile-img">
-        </li>
-    </ul>
-    
-    <!-- Slider Dots -->
-    <div class="slider-dots" id="slider-dots">
-        <span class="dot active" onclick="setHeroSlide(0)"></span>
-        <span class="dot" onclick="setHeroSlide(1)"></span>
-    </div>
-</section>
+/* --- 2. STICKY HEADER --- */
+.main-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background: linear-gradient(135deg, var(--emerald-dark), var(--emerald-mid));
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
 
-<!-- Mobile Nav Drawer -->
-<div id="mobileDrawer" class="mobile-drawer">
-    <span class="close-drawer" onclick="toggleMenu()">&times;</span>
-    <nav>
-        <a href="#" onclick="toggleMenu()">HOME</a>
-        <a href="#" onclick="toggleMenu()">ABOUT</a>
-        <a href="#" onclick="toggleMenu()">PRODUCTS</a>
-        <a href="https://in.indusviva.com/signin">VIRTUAL OFFICE</a>
-    </nav>
-</div>
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    height: 70px;
+}
 
-    <div class="how-to-order">
-        <h2><i class="fa-solid fa-cart-shopping"></i> How to Order</h2>
-        <p>Browse items. Click <strong>More Info</strong> for details. Click <strong>WhatsApp</strong> to order.</p>
-    </div>
+.nav-logo {
+    height: 45px;
+    width: auto;
+    transition: transform 0.3s;
+}
 
-    <main id="product-container" class="product-grid">
-        <div style="text-align: center; grid-column: 1/-1; padding: 50px;">
-            <i class="fas fa-spinner fa-spin fa-2x"></i>
-            <p>Loading Catalog...</p>
-        </div>
-    </main>
+.nav-logo:hover {
+    transform: scale(1.05);
+}
 
-    <div id="infoModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
-            <div id="modalBody"></div>
-        </div>
-    </div>
+.nav-links {
+    display: flex;
+    gap: 10px;
+}
 
-    <footer>
-        <p><strong>Secure Payments via Paytm</strong></p>
-        <p>Contact us: +971 50 224 7162</p>
-        <p>&copy; 2024 Choco Inventory</p>
-    </footer>
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    transition: 0.3s;
+}
 
-    <script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+.nav-links a:hover, .nav-links a.active {
+    background: rgba(255,255,255,0.1);
+    color: var(--gold);
+}
 
-    <script>
-        const WHATSAPP_NUMBER = "971502247162";
-        const CSV_URL = "Products.csv";
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
 
-        Papa.parse(CSV_URL, {
-            download: true,
-            header: true,
-            skipEmptyLines: true,
-            complete: function(results) {
-                displayProducts(results.data);
-            }
-        });
+/* --- 3. HERO SLIDER --- */
+.hero-slider {
+    margin-top: 70px; /* Space for sticky header */
+    position: relative;
+    height: 500px;
+    width: 100%;
+    background: #000;
+}
 
-        function displayProducts(products) {
-            const container = document.getElementById('product-container');
-            container.innerHTML = ""; 
+.banner-slides {
+    list-style: none;
+}
 
-            products.forEach((product, pIndex) => {
-                if (!product.Name || !product.Code) return;
+.hero-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity var(--transition-speed) ease-in-out;
+    z-index: 1;
+}
 
-                // Split multiple images
-                const imageList = product.Image.split(',').map(img => img.trim());
-                
-                // Create Image HTML
-                let imageHtml = '';
-                imageList.forEach((img, iIndex) => {
-                    const activeClass = iIndex === 0 ? 'active' : '';
-                    imageHtml += `
-                        <img src="images/${img}" 
-                             class="slide ${activeClass}" 
-                             data-index="${iIndex}" 
-                             alt="${product.Name}">
-                    `;
-                });
+.hero-slide.active {
+    opacity: 1;
+    z-index: 10;
+}
 
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.innerHTML = `
-                    <div class="product-image-container" id="slider-${pIndex}">
-                        <a href="images/${imageList[0]}" class="glightbox" data-glightbox="title: ${product.Name}">
-                            ${imageHtml}
-                        </a>
-                    </div>
-                    <div class="product-info">
-                        <h3>${product.Name}</h3>
-                        <p>${product.Details.substring(0, 90)}...</p>
-                        <div class="product-meta">
-                            <span class="code-tag">ID: ${product.Code}</span>
-                        </div>
-                        <button onclick="openMoreInfo('${product.Code}')" class="btn-info">
-                            <i class="fa-solid fa-circle-info"></i> More Info
-                        </button>
-                        <a href="https://wa.me/${WHATSAPP_NUMBER}?text=Hi!%20I%20want%20to%20order:%20${encodeURIComponent(product.Name)}%20(Code:%20${product.Code})" 
-                           class="btn-whatsapp">
-                           <i class="fa-brands fa-whatsapp"></i> Order on WhatsApp
-                        </a>
-                    </div>
-                `;
-                container.appendChild(card);
+.hero-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
-                // Start Auto-Slider for this card if more than 1 image
-                if (imageList.length > 1) {
-                    initSlider(`slider-${pIndex}`);
-                }
-            });
+.mobile-img { display: none; }
 
-            GLightbox({ touchNavigation: true, loop: true, zoomable: true });
-        }
+.slider-dots {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex;
+    gap: 12px;
+}
 
-        // Auto-Slider Logic (Fade Effect)
-        function initSlider(containerId) {
-            let current = 0;
-            const container = document.getElementById(containerId);
-            const slides = container.querySelectorAll('.slide');
-            
-            setInterval(() => {
-                slides[current].classList.remove('active');
-                current = (current + 1) % slides.length;
-                slides[current].classList.add('active');
-                
-                // Update the zoom link to the currently visible image
-                const link = container.querySelector('a');
-                link.href = slides[current].src;
-            }, 4000); // Switches every 4 seconds
-        }
+.dot {
+    width: 10px;
+    height: 10px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+}
 
-        function openMoreInfo(productCode) {
-            const modal = document.getElementById("infoModal");
-            const body = document.getElementById("modalBody");
-            modal.style.display = "block";
-            body.innerHTML = 'Loading...';
+.dot.active {
+    background: var(--gold);
+    width: 25px;
+    border-radius: 10px;
+}
 
-            fetch(`details/${productCode}.html`)
-                .then(response => response.ok ? response.text() : 'Details coming soon...')
-                .then(data => body.innerHTML = data)
-                .catch(() => body.innerHTML = 'Error loading details.');
-        }
+/* --- 4. SECTIONS & GRID --- */
+.how-to-order {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    border-left: 6px solid var(--emerald-mid);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
 
-        function closeModal() {
-            document.getElementById("infoModal").style.display = "none";
-        }
+.how-to-order h2 { color: var(--emerald-dark); margin-bottom: 10px; }
 
-        window.onclick = function(event) {
-            if (event.target == document.getElementById("infoModal")) closeModal();
-        }
-    </script>
-</body>
-</html>
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto 60px auto;
+}
+
+/* --- 5. PRODUCT CARDS & CARD SLIDER --- */
+.product-card {
+    background: var(--white);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover { transform: translateY(-8px); }
+
+.product-image-container {
+    position: relative;
+    height: 280px;
+    width: 100%;
+    overflow: hidden;
+    background: #eee;
+    cursor: zoom-in;
+}
+
+/* Transitions for multi-images in cards */
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity var(--transition-speed) ease-in-out;
+}
+
+.slide.active { opacity: 1; }
+
+.product-info {
+    padding: 25px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-info h3 { font-size: 1.4rem; margin-bottom: 10px; color: var(--emerald-dark); }
+.product-info p { font-size: 0.95rem; color: var(--text-muted); flex-grow: 1; margin-bottom: 20px; }
+
+.product-meta {
+    margin-bottom: 15px;
+}
+
+.code-tag {
+    background: var(--bg-light);
+    color: var(--emerald-mid);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 1px solid #ddd;
+}
+
+/* --- 6. BUTTONS --- */
+.btn-info {
+    background: #f8f9fa;
+    color: var(--text-main);
+    border: 1px solid #ddd;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-info:hover { background: var(--emerald-dark); color: white; border-color: var(--emerald-dark); }
+
+.btn-whatsapp {
+    background: var(--whatsapp-green);
+    color: white;
+    text-decoration: none;
+    padding: 14px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.3s;
+}
+
+.btn-whatsapp:hover { background: var(--whatsapp-dark); }
+
+/* --- 7. MODAL --- */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+}
+
+.modal-content {
+    background: var(--white);
+    margin: 5vh auto;
+    padding: 40px;
+    width: 90%;
+    max-width: 700px;
+    max-height: 85vh;
+    border-radius: 24px;
+    overflow-y: auto;
+    position: relative;
+    animation: modalSlide 0.4s ease-out;
+}
+
+@keyframes modalSlide {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.close-modal {
+    position: sticky;
+    top: -20px;
+    float: right;
+    font-size: 32px;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+/* --- 8. MOBILE NAV DRAWER --- */
+.mobile-drawer {
+    position: fixed;
+    right: -100%;
+    top: 0;
+    width: 280px;
+    height: 100%;
+    background: var(--emerald-dark);
+    z-index: 3000;
+    transition: 0.4s;
+    padding: 60px 30px;
+}
+
+.mobile-drawer.open { right: 0; }
+.mobile-drawer a {
+    display: block;
+    color: white;
+    font-size: 1.2rem;
+    padding: 15px 0;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.close-drawer {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+/* --- 9. FOOTER --- */
+footer {
+    background: var(--white);
+    text-align: center;
+    padding: 60px 20px;
+    border-top: 1px solid #ddd;
+}
+
+footer p { color: var(--text-muted); margin-bottom: 10px; }
+
+/* --- 10. RESPONSIVENESS --- */
+@media (max-width: 768px) {
+    .nav-links { display: none; }
+    .mobile-menu-btn { display: block; }
+    .hero-slider { height: 350px; }
+    .desktop-img { display: none; }
+    .mobile-img { display: block; }
+    .modal-content { padding: 20px; margin: 10vh auto; }
+}
