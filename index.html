@@ -200,6 +200,33 @@
         window.onclick = function(event) {
             if (event.target == document.getElementById("infoModal")) closeModal();
         }
+        // --- Hero Slider Logic ---
+let currentHeroSlide = 0;
+const heroSlides = document.querySelectorAll('.hero-slide');
+const dots = document.querySelectorAll('.dot');
+
+function setHeroSlide(n) {
+    heroSlides[currentHeroSlide].classList.remove('active');
+    dots[currentHeroSlide].classList.remove('active');
+    
+    currentHeroSlide = n;
+    
+    heroSlides[currentHeroSlide].classList.add('active');
+    dots[currentHeroSlide].classList.add('active');
+}
+
+function autoHeroSlider() {
+    let next = (currentHeroSlide + 1) % heroSlides.length;
+    setHeroSlide(next);
+}
+
+setInterval(autoHeroSlider, 5000); // Change banner every 5 seconds
+
+// --- Mobile Menu Toggle ---
+function toggleMenu() {
+    document.getElementById('mobileDrawer').classList.toggle('open');
+}
     </script>
 </body>
 </html>
+
