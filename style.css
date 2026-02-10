@@ -1,224 +1,205 @@
-:root {
-    --primary: #075E54;
-    --secondary: #128C7E;
-    --accent: #25D366;
-    --bg: #f0f2f5;
-    --white: #ffffff;
-    --text: #1c1e21;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choco Inventory | Premium Health Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+</head>
+<body>
 
-body {
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: var(--bg);
-    color: var(--text);
-    margin: 0;
-    line-height: 1.5;
-}
+    <!-- 1. NEW STICKY HEADER -->
+<header class="main-header">
+    <div class="header-container">
+        <div class="logo-area">
+            <a href="/"><img src="images/logo-DYd0Cdpu.svg" alt="IndusViva Logo" class="nav-logo"></a>
+        </div>
+        
+        <!-- Desktop Navigation -->
+        <nav class="nav-links">
+            <a href="/" class="active">HOME</a>
+            <a href="#">ABOUT</a>
+            <a href="#">PRODUCTS</a>
+            <a href="#">COMPLIANCE</a>
+            <a href="https://in.indusviva.com/signin" target="_blank">VIRTUAL OFFICE</a>
+            <a href="#">CUSTOMER CARE</a>
+        </nav>
 
-header {
-    background: var(--white);
-    padding: 40px 20px;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn" onclick="toggleMenu()">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+</header>
 
-header h1 { margin: 0; color: var(--primary); font-size: 2.5rem; }
-header p { color: #65676b; margin-top: 10px; }
+<!-- 2. HERO BANNER SLIDER -->
+<section class="hero-slider">
+    <ul class="banner-slides" id="hero-slider">
+        <!-- Slide 1 -->
+        <li class="hero-slide active">
+            <img src="images/banner1.jpg" alt="Banner 1" class="desktop-img">
+            <img src="images/banner1-mob.jpg" alt="Banner 1 Mobile" class="mobile-img">
+        </li>
+        <!-- Slide 2 -->
+        <li class="hero-slide">
+            <img src="images/banner2.jpg" alt="Banner 2" class="desktop-img">
+            <img src="images/banner2-mob.jpg" alt="Banner 2 Mobile" class="mobile-img">
+        </li>
+    </ul>
+    
+    <!-- Slider Dots -->
+    <div class="slider-dots" id="slider-dots">
+        <span class="dot active" onclick="setHeroSlide(0)"></span>
+        <span class="dot" onclick="setHeroSlide(1)"></span>
+    </div>
+</section>
 
-.how-to-order {
-    max-width: 800px;
-    margin: 30px auto;
-    background: #e7f3ff;
-    padding: 20px;
-    border-radius: 12px;
-    border-left: 5px solid #1877f2;
-}
+<!-- Mobile Nav Drawer -->
+<div id="mobileDrawer" class="mobile-drawer">
+    <span class="close-drawer" onclick="toggleMenu()">&times;</span>
+    <nav>
+        <a href="#" onclick="toggleMenu()">HOME</a>
+        <a href="#" onclick="toggleMenu()">ABOUT</a>
+        <a href="#" onclick="toggleMenu()">PRODUCTS</a>
+        <a href="https://in.indusviva.com/signin">VIRTUAL OFFICE</a>
+    </nav>
+</div>
 
-.product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 25px;
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
+    <div class="how-to-order">
+        <h2><i class="fa-solid fa-cart-shopping"></i> How to Order</h2>
+        <p>Browse items. Click <strong>More Info</strong> for details. Click <strong>WhatsApp</strong> to order.</p>
+    </div>
 
-.product-card {
-    background: var(--white);
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
-    transition: transform 0.3s ease;
-    display: flex;
-    flex-direction: column;
-}
+    <main id="product-container" class="product-grid">
+        <div style="text-align: center; grid-column: 1/-1; padding: 50px;">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p>Loading Catalog...</p>
+        </div>
+    </main>
 
-.product-card:hover { transform: translateY(-5px); }
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
 
-/* Image styling for Click/Zoom */
-.product-image-container {
-    cursor: zoom-in;
-    overflow: hidden;
-    height: 250px;
-}
+    <footer>
+        <p><strong>Secure Payments via Paytm</strong></p>
+        <p>Contact us: +971 50 224 7162</p>
+        <p>&copy; 2024 Choco Inventory</p>
+    </footer>
 
-.product-card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: opacity 0.3s;
-}
+    <script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
-.product-card img:hover { opacity: 0.9; }
+    <script>
+        const WHATSAPP_NUMBER = "971502247162";
+        const CSV_URL = "Products.csv";
 
-.product-info {
-    padding: 20px;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
+        Papa.parse(CSV_URL, {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                displayProducts(results.data);
+            }
+        });
 
-.product-info h3 { margin: 0 0 10px 0; font-size: 1.25rem; }
-.product-info p { font-size: 0.9rem; color: #606770; flex-grow: 1; }
+        function displayProducts(products) {
+            const container = document.getElementById('product-container');
+            container.innerHTML = ""; 
 
-.product-meta {
-    margin-top: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+            products.forEach((product, pIndex) => {
+                if (!product.Name || !product.Code) return;
 
-.code-tag {
-    background: #f0f2f5;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: bold;
-}
+                // Split multiple images
+                const imageList = product.Image.split(',').map(img => img.trim());
+                
+                // Create Image HTML
+                let imageHtml = '';
+                imageList.forEach((img, iIndex) => {
+                    const activeClass = iIndex === 0 ? 'active' : '';
+                    imageHtml += `
+                        <img src="images/${img}" 
+                             class="slide ${activeClass}" 
+                             data-index="${iIndex}" 
+                             alt="${product.Name}">
+                    `;
+                });
 
-.btn-whatsapp {
-    background: var(--accent);
-    color: white;
-    text-decoration: none;
-    padding: 12px;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: bold;
-    display: block;
-    margin-top: 15px;
-    transition: background 0.3s;
-}
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-image-container" id="slider-${pIndex}">
+                        <a href="images/${imageList[0]}" class="glightbox" data-glightbox="title: ${product.Name}">
+                            ${imageHtml}
+                        </a>
+                    </div>
+                    <div class="product-info">
+                        <h3>${product.Name}</h3>
+                        <p>${product.Details.substring(0, 90)}...</p>
+                        <div class="product-meta">
+                            <span class="code-tag">ID: ${product.Code}</span>
+                        </div>
+                        <button onclick="openMoreInfo('${product.Code}')" class="btn-info">
+                            <i class="fa-solid fa-circle-info"></i> More Info
+                        </button>
+                        <a href="https://wa.me/${WHATSAPP_NUMBER}?text=Hi!%20I%20want%20to%20order:%20${encodeURIComponent(product.Name)}%20(Code:%20${product.Code})" 
+                           class="btn-whatsapp">
+                           <i class="fa-brands fa-whatsapp"></i> Order on WhatsApp
+                        </a>
+                    </div>
+                `;
+                container.appendChild(card);
 
-.btn-whatsapp:hover { background: var(--secondary); }
+                // Start Auto-Slider for this card if more than 1 image
+                if (imageList.length > 1) {
+                    initSlider(`slider-${pIndex}`);
+                }
+            });
 
-footer {
-    text-align: center;
-    padding: 50px 20px;
-    background: var(--white);
-    margin-top: 50px;
-    border-top: 1px solid #ddd;
-}
+            GLightbox({ touchNavigation: true, loop: true, zoomable: true });
+        }
 
-/* Lightbox specific tweak */
-.glightbox-container .gslide-image img {
-    max-height: 90vh !important;
-}
-/* Modal Styles */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.7);
-    backdrop-filter: blur(5px);
-}
+        // Auto-Slider Logic (Fade Effect)
+        function initSlider(containerId) {
+            let current = 0;
+            const container = document.getElementById(containerId);
+            const slides = container.querySelectorAll('.slide');
+            
+            setInterval(() => {
+                slides[current].classList.remove('active');
+                current = (current + 1) % slides.length;
+                slides[current].classList.add('active');
+                
+                // Update the zoom link to the currently visible image
+                const link = container.querySelector('a');
+                link.href = slides[current].src;
+            }, 4000); // Switches every 4 seconds
+        }
 
-.modal-content {
-    background-color: #fff;
-    margin: 5% auto;
-    padding: 30px;
-    border-radius: 20px;
-    width: 90%;
-    max-width: 600px;
-    max-height: 80vh;
-    overflow-y: auto;
-    position: relative;
-    animation: slideUp 0.3s ease-out;
-}
+        function openMoreInfo(productCode) {
+            const modal = document.getElementById("infoModal");
+            const body = document.getElementById("modalBody");
+            modal.style.display = "block";
+            body.innerHTML = 'Loading...';
 
-@keyframes slideUp {
-    from { transform: translateY(100px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
+            fetch(`details/${productCode}.html`)
+                .then(response => response.ok ? response.text() : 'Details coming soon...')
+                .then(data => body.innerHTML = data)
+                .catch(() => body.innerHTML = 'Error loading details.');
+        }
 
-.close-modal {
-    position: sticky;
-    top: 0;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    color: #666;
-}
+        function closeModal() {
+            document.getElementById("infoModal").style.display = "none";
+        }
 
-/* More Info Button */
-.btn-info {
-    background: #f0f2f5;
-    color: #1c1e21;
-    text-decoration: none;
-    padding: 10px;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: 600;
-    display: block;
-    margin-top: 10px;
-    border: 1px solid #ddd;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-info:hover { background: #e4e6eb; }
-
-/* Detail Formatting */
-.ingredients-list { display: grid; grid-template-columns: 1fr 1fr; font-size: 0.9rem; }
-.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
-.info-item { background: #f8f9fa; padding: 10px; border-radius: 8px; border-left: 3px solid var(--secondary); }
-/* 1. Container for the sliding images */
-.product-image-container {
-    position: relative;
-    height: 280px; /* Adjust height as you like */
-    width: 100%;
-    overflow: hidden;
-    background: #f8f9fa;
-    cursor: zoom-in;
-}
-
-/* 2. Base style for every image in the slider */
-.slide {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0; /* Hidden by default */
-    z-index: 1;
-    /* This is the 1500ms transition you requested */
-    transition: opacity 1500ms ease-in-out;
-}
-
-/* 3. The class that makes an image visible */
-.slide.active {
-    opacity: 1;
-    z-index: 2;
-}
-
-/* 4. Ensure the zoom link fills the container */
-.product-image-container a {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
+        window.onclick = function(event) {
+            if (event.target == document.getElementById("infoModal")) closeModal();
+        }
+    </script>
+</body>
+</html>
