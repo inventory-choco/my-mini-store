@@ -1,4 +1,16 @@
-<!-- 1. NEW STICKY HEADER -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choco Inventory | Premium Health Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+</head>
+<body>
+
+    <!-- 1. NEW STICKY HEADER -->
 <header class="main-header">
     <div class="header-container">
         <div class="logo-area">
@@ -54,3 +66,140 @@
         <a href="https://in.indusviva.com/signin">VIRTUAL OFFICE</a>
     </nav>
 </div>
+
+    <div class="how-to-order">
+        <h2><i class="fa-solid fa-cart-shopping"></i> How to Order</h2>
+        <p>Browse items. Click <strong>More Info</strong> for details. Click <strong>WhatsApp</strong> to order.</p>
+    </div>
+
+    <main id="product-container" class="product-grid">
+        <div style="text-align: center; grid-column: 1/-1; padding: 50px;">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p>Loading Catalog...</p>
+        </div>
+    </main>
+
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p><strong>Secure Payments via Paytm</strong></p>
+        <p>Contact us: +971 50 224 7162</p>
+        <p>&copy; 2024 Choco Inventory</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+    <script>
+        const WHATSAPP_NUMBER = "971502247162";
+        const CSV_URL = "Products.csv";
+
+        Papa.parse(CSV_URL, {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                displayProducts(results.data);
+            }
+        });
+
+        function displayProducts(products) {
+            const container = document.getElementById('product-container');
+            container.innerHTML = ""; 
+
+            products.forEach((product, pIndex) => {
+                if (!product.Name || !product.Code) return;
+
+                // Split multiple images
+                const imageList = product.Image.split(',').map(img => img.trim());
+                
+                // Create Image HTML
+                let imageHtml = '';
+                imageList.forEach((img, iIndex) => {
+                    const activeClass = iIndex === 0 ? 'active' : '';
+                    imageHtml += `
+                        <img src="images/${img}" 
+                             class="slide ${activeClass}" 
+                             data-index="${iIndex}" 
+                             alt="${product.Name}">
+                    `;
+                });
+
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-image-container" id="slider-${pIndex}">
+                        <a href="images/${imageList[0]}" class="glightbox" data-glightbox="title: ${product.Name}">
+                            ${imageHtml}
+                        </a>
+                    </div>
+                    <div class="product-info">
+                        <h3>${product.Name}</h3>
+                        <p>${product.Details.substring(0, 90)}...</p>
+                        <div class="product-meta">
+                            <span class="code-tag">ID: ${product.Code}</span>
+                        </div>
+                        <button onclick="openMoreInfo('${product.Code}')" class="btn-info">
+                            <i class="fa-solid fa-circle-info"></i> More Info
+                        </button>
+                        <a href="https://wa.me/${WHATSAPP_NUMBER}?text=Hi!%20I%20want%20to%20order:%20${encodeURIComponent(product.Name)}%20(Code:%20${product.Code})" 
+                           class="btn-whatsapp">
+                           <i class="fa-brands fa-whatsapp"></i> Order on WhatsApp
+                        </a>
+                    </div>
+                `;
+                container.appendChild(card);
+
+                // Start Auto-Slider for this card if more than 1 image
+                if (imageList.length > 1) {
+                    initSlider(`slider-${pIndex}`);
+                }
+            });
+
+            GLightbox({ touchNavigation: true, loop: true, zoomable: true });
+        }
+
+        // Auto-Slider Logic (Fade Effect)
+        function initSlider(containerId) {
+            let current = 0;
+            const container = document.getElementById(containerId);
+            const slides = container.querySelectorAll('.slide');
+            
+            setInterval(() => {
+                slides[current].classList.remove('active');
+                current = (current + 1) % slides.length;
+                slides[current].classList.add('active');
+                
+                // Update the zoom link to the currently visible image
+                const link = container.querySelector('a');
+                link.href = slides[current].src;
+            }, 4000); // Switches every 4 seconds
+        }
+
+        function openMoreInfo(productCode) {
+            const modal = document.getElementById("infoModal");
+            const body = document.getElementById("modalBody");
+            modal.style.display = "block";
+            body.innerHTML = 'Loading...';
+
+            fetch(`details/${productCode}.html`)
+                .then(response => response.ok ? response.text() : 'Details coming soon...')
+                .then(data => body.innerHTML = data)
+                .catch(() => body.innerHTML = 'Error loading details.');
+        }
+
+        function closeModal() {
+            document.getElementById("infoModal").style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById("infoModal")) closeModal();
+        }
+    </script>
+</body>
+</html>
